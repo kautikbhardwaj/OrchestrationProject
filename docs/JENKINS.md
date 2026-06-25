@@ -19,7 +19,7 @@ Create one credential:
 
 | Jenkins ID | Type | Purpose |
 |---|---|---|
-| `aws-credentials` | AWS Credentials | ECR, EKS, and optional SNS access |
+| `kautik-mern-aws` | AWS Credentials | ECR, EKS, and optional SNS access |
 
 Prefer an EC2 instance profile and short-lived credentials in a real
 environment. Never place AWS keys in the Jenkinsfile.

@@ -19,8 +19,10 @@ pipeline {
   }
 
   environment {
+    EXPECTED_AWS_ACCOUNT_ID = '049705857432'
     AWS_DEFAULT_REGION = "${params.AWS_REGION}"
     AWS_REGION = "${params.AWS_REGION}"
+    EKS_CLUSTER = "${params.EKS_CLUSTER}"
     K8S_NAMESPACE = 'mern-app'
   }
 
@@ -64,9 +66,12 @@ pipeline {
 
     stage('Push images to ECR') {
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'kautik-mern-aws']]) {
           script {
             env.AWS_ACCOUNT_ID = sh(script: 'aws sts get-caller-identity --query Account --output text', returnStdout: true).trim()
+            if (env.AWS_ACCOUNT_ID != env.EXPECTED_AWS_ACCOUNT_ID) {
+              error("Wrong AWS account selected. Expected ${env.EXPECTED_AWS_ACCOUNT_ID}, received ${env.AWS_ACCOUNT_ID}.")
+            }
             env.ECR_REGISTRY = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${params.AWS_REGION}.amazonaws.com"
           }
           sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}'
@@ -87,7 +92,9 @@ pipeline {
         expression { params.DEPLOY_TO_EKS }
       }
       steps {
-        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'kautik-mern-aws']]) {
+          sh 'aws sts get-caller-identity --query "{Account:Account,Arn:Arn}" --output table'
+          sh 'aws eks describe-cluster --region "$AWS_REGION" --name "$EKS_CLUSTER" --query "cluster.{Name:name,Status:status,Region:arn}" --output table'
           sh 'bash ./scripts/deploy.sh'
         }
       }
@@ -98,7 +105,7 @@ pipeline {
     success {
       script {
         if (params.SNS_TOPIC_ARN?.trim()) {
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'kautik-mern-aws']]) {
             sh 'aws sns publish --topic-arn "$SNS_TOPIC_ARN" --subject "MERN deployment succeeded" --message "Build ${BUILD_NUMBER}, image ${IMAGE_TAG}, completed successfully."'
           }
         }
@@ -107,7 +114,7 @@ pipeline {
     failure {
       script {
         if (params.SNS_TOPIC_ARN?.trim()) {
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
+          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'kautik-mern-aws']]) {
             sh 'aws sns publish --topic-arn "$SNS_TOPIC_ARN" --subject "MERN deployment failed" --message "Build ${BUILD_NUMBER} failed. Review ${BUILD_URL}"'
           }
         }
