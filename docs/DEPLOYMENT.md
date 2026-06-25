@@ -48,8 +48,9 @@ aws eks update-kubeconfig --region ap-south-1 --name mern-eks
 kubectl get nodes
 ```
 
-The cluster definition creates two private `t3.medium` managed nodes and
-enables EKS control-plane logs.
+The cost-conscious academic cluster definition creates one private
+`t3.medium` managed node and enables EKS control-plane logs. This is suitable
+for demonstration but is not highly available.
 
 Grant the Jenkins IAM principal cluster access. One option is an EKS access
 entry:
