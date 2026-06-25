@@ -1,0 +1,72 @@
+{{- if not .Values.mongodb.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mern-mongodb
+  labels:
+    {{- include "mern.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  {{ .Values.mongodb.secretKey }}: {{ include "mern.mongoUrl" . | quote }}
+---
+{{- end }}
+{{- if .Values.mongodb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    {{- include "mern.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
+  ports:
+    - { name: mongodb, port: 27017, targetPort: mongodb }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  labels:
+    {{- include "mern.labels" . | nindent 4 }}
+spec:
+  serviceName: mongodb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: {{ .Values.mongodb.image }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.mongodb.database | quote }}
+          ports:
+            - { name: mongodb, containerPort: 27017 }
+          readinessProbe:
+            exec:
+              command: ["mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+            initialDelaySeconds: 10
+          volumeMounts:
+            - { name: data, mountPath: /data/db }
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 500m, memory: 1Gi }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- if .Values.mongodb.storageClassName }}
+        storageClassName: {{ .Values.mongodb.storageClassName }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.mongodb.storage }}
+{{- end }}

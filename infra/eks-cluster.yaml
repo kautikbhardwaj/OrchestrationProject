@@ -1,0 +1,36 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: mern-eks
+  region: ap-south-1
+
+availabilityZones:
+  - ap-south-1a
+  - ap-south-1b
+
+iam:
+  withOIDC: true
+
+managedNodeGroups:
+  - name: application-nodes
+    instanceType: t3.medium
+    minSize: 2
+    desiredCapacity: 2
+    maxSize: 4
+    privateNetworking: true
+    volumeSize: 30
+    labels:
+      workload: application
+    tags:
+      Project: SampleMERN
+      ManagedBy: eksctl
+
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+      - api
+      - audit
+      - authenticator
+      - controllerManager
+      - scheduler

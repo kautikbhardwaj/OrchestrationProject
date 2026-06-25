@@ -4,25 +4,27 @@ import axios from "axios";
 function Home() {
   const [message, setMessage] = useState("");
   const [profile, setProfile] = useState([]);
+  const helloApi = process.env.REACT_APP_HELLO_API_URL || "/api/hello";
+  const profileApi = process.env.REACT_APP_PROFILE_API_URL || "/api/profile";
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/")
+      .get(helloApi)
       .then((response) => {
         setMessage(response.data.msg);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  }, [helloApi]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3002/fetchUser")
+      .get(`${profileApi}/fetchUser`)
       .then((response) => {
         setProfile(response.data);
         
       })
       .catch((error) => console.error("Error fetching data:", error));
-  },[]);
+  },[profileApi]);
 
   
 
@@ -35,7 +37,7 @@ function Home() {
         profile.map((user) => {
             console.log('user', user)
           return (
-            <div>
+            <div key={user._id || `${user.name}-${user.age}`}>
               <h3>Name: {user.name}</h3>
               <h3>Age: {user.age}</h3>
             </div>

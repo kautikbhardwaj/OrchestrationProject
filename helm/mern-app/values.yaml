@@ -1,0 +1,59 @@
+image:
+  pullPolicy: IfNotPresent
+  tag: latest
+  frontend:
+    repository: frontend
+  hello:
+    repository: hello-service
+  profile:
+    repository: profile-service
+
+replicaCount:
+  frontend: 2
+  hello: 2
+  profile: 2
+
+service:
+  frontend:
+    type: LoadBalancer
+    port: 80
+  hello:
+    port: 3001
+  profile:
+    port: 3002
+
+resources:
+  frontend:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 250m, memory: 256Mi }
+  hello:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 250m, memory: 256Mi }
+  profile:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: 500m, memory: 512Mi }
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+mongodb:
+  enabled: true
+  image: mongo:7
+  database: mernapp
+  storage: 5Gi
+  storageClassName: ""
+  externalUrl: ""
+  existingSecret: ""
+  secretKey: MONGO_URL
+
+ingress:
+  enabled: false
+  className: alb
+  host: ""
+  annotations: {}
+
+podDisruptionBudget:
+  enabled: true

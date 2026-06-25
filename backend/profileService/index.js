@@ -5,9 +5,11 @@ var cors = require('cors')
 
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3002;
 
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.error('MongoDB connection error:', error.message));
 
 app.use(express.json());
 app.use(cors())
@@ -15,6 +17,13 @@ app.use(cors())
 
 app.get('/health', (req,res)=>{
     res.send({status: 'OK'})
+})
+
+app.get('/ready', (req,res)=>{
+    if (mongoose.connection.readyState === 1) {
+      return res.send({status: 'READY'})
+    }
+    return res.status(503).send({status: 'NOT_READY'})
 })
 
 const userSchema = mongoose.Schema({
@@ -42,10 +51,6 @@ app.post('/addUser', async (req,res)=>{
           return res
             .status(400)
             .json({ error: "Both name and age are required." });
-        }
-        const existingUser = await User.find({name: name});
-        if (!existingUser) {
-          return res.status(404).json({ error: "User not found." });
         }
         const newuser = new User({
           name,
@@ -75,6 +80,11 @@ app.get('/fetchUser', async (req,res)=>{
       }
 })
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+});
+
+process.on('SIGTERM', async () => {
+  await mongoose.connection.close();
+  server.close(() => process.exit(0));
 });
