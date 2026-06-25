@@ -17,6 +17,8 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
       containers:
         - name: profile-service
           image: "{{ .Values.image.profile.repository }}:{{ .Values.image.tag }}"

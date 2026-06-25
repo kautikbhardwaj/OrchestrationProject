@@ -16,7 +16,7 @@ replicaCount:
 service:
   frontend:
     type: LoadBalancer
-    port: 80
+    port: 8080
   hello:
     port: 3001
   profile:
@@ -44,7 +44,7 @@ mongodb:
   image: mongo:7
   database: mernapp
   storage: 5Gi
-  storageClassName: ""
+  storageClassName: gp3
   externalUrl: ""
   existingSecret: ""
   secretKey: MONGO_URL

@@ -17,6 +17,8 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
       containers:
         - name: hello-service
           image: "{{ .Values.image.hello.repository }}:{{ .Values.image.tag }}"

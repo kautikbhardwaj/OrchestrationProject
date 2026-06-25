@@ -87,6 +87,12 @@ It also installs the EKS Pod Identity Agent and Kubernetes Metrics Server
 add-ons. Metrics Server supplies CPU data to the horizontal pod autoscalers.
 CloudWatch receives Container Insights metrics and container logs.
 
+Create the CSI-backed EBS storage class used by MongoDB:
+
+```bash
+kubectl apply -f infra/ebs-storageclass.yaml
+```
+
 Create an SNS topic and a high-node-CPU alarm:
 
 ```bash

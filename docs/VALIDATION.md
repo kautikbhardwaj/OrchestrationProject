@@ -6,15 +6,15 @@
 APP_HOST="$(kubectl get svc frontend -n mern-app \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')"
 
-curl "http://${APP_HOST}/health"
-curl "http://${APP_HOST}/api/hello"
-curl "http://${APP_HOST}/api/profile/fetchUser"
+curl "http://${APP_HOST}:8080/health"
+curl "http://${APP_HOST}:8080/api/hello"
+curl "http://${APP_HOST}:8080/api/profile/fetchUser"
 
-curl -X POST "http://${APP_HOST}/api/profile/addUser" \
+curl -X POST "http://${APP_HOST}:8080/api/profile/addUser" \
   -H "Content-Type: application/json" \
   -d '{"name":"Hero Vired","age":25}'
 
-curl "http://${APP_HOST}/api/profile/fetchUser"
+curl "http://${APP_HOST}:8080/api/profile/fetchUser"
 ```
 
 Expected results:
