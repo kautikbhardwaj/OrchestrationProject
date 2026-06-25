@@ -49,8 +49,10 @@ kubectl get nodes
 ```
 
 The cost-conscious academic cluster definition creates one private
-`t3.medium` managed node and enables EKS control-plane logs. This is suitable
-for demonstration but is not highly available.
+`c7i-flex.large` managed node and enables EKS control-plane logs. This instance
+type is Free Tier-eligible for the configured account and provides 2 vCPUs and
+4 GiB RAM. The single-node design is suitable for demonstration but is not
+highly available.
 
 Grant the Jenkins IAM principal cluster access. One option is an EKS access
 entry:

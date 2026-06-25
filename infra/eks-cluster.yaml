@@ -14,7 +14,7 @@ iam:
 
 managedNodeGroups:
   - name: application-nodes
-    instanceType: t3.medium
+    instanceType: c7i-flex.large
     minSize: 1
     desiredCapacity: 1
     maxSize: 1
