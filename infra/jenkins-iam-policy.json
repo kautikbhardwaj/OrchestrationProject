@@ -28,19 +28,23 @@
         "ecr:PutImageScanningConfiguration",
         "ecr:UploadLayerPart"
       ],
-      "Resource": "arn:aws:ecr:*:*:repository/mern-*"
+      "Resource": [
+        "arn:aws:ecr:ap-south-1:049705857432:repository/mern-frontend",
+        "arn:aws:ecr:ap-south-1:049705857432:repository/mern-hello-service",
+        "arn:aws:ecr:ap-south-1:049705857432:repository/mern-profile-service"
+      ]
     },
     {
       "Sid": "EksClusterDiscovery",
       "Effect": "Allow",
       "Action": "eks:DescribeCluster",
-      "Resource": "arn:aws:eks:*:*:cluster/mern-eks"
+      "Resource": "arn:aws:eks:ap-south-1:049705857432:cluster/mern-eks"
     },
     {
       "Sid": "DeploymentNotifications",
       "Effect": "Allow",
       "Action": "sns:Publish",
-      "Resource": "arn:aws:sns:*:*:mern-deployment-events"
+      "Resource": "arn:aws:sns:ap-south-1:049705857432:mern-deployment-events"
     }
   ]
 }
