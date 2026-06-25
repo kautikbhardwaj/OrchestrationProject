@@ -63,6 +63,7 @@ session tokens in screenshots.
 ## Final repository checklist
 
 - [x] Add the student name and final GitHub repository URL.
+- [x] Configure the GitHub push webhook for the Jenkins pipeline.
 - [ ] Commit all files and push to your fork.
 - [ ] Confirm the repository is visible to the evaluator.
 - [ ] Add screenshots to `docs/evidence/` and reference them in a report.
