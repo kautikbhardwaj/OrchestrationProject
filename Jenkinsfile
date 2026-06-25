@@ -14,7 +14,7 @@ pipeline {
   parameters {
     string(name: 'AWS_REGION', defaultValue: 'ap-south-1', description: 'AWS Region')
     string(name: 'EKS_CLUSTER', defaultValue: 'mern-eks', description: 'EKS cluster name')
-    booleanParam(name: 'DEPLOY_TO_EKS', defaultValue: true, description: 'Deploy after pushing images')
+    booleanParam(name: 'DEPLOY_TO_EKS', defaultValue: false, description: 'Deploy after pushing images')
     string(name: 'SNS_TOPIC_ARN', defaultValue: '', description: 'Optional deployment notification topic')
   }
 
